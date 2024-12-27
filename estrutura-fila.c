@@ -1,98 +1,93 @@
-#include <stdio.h>
 #include <stdlib.h>
-
+#include<stdio.h>
+#include <locale.h>
+    
 struct fila{
-    int capacidade;
     int *dados;
     int nElem;
-    int primeiro;
+    int capacidade;
     int ultimo;
+    int primeiro;
 };
-
-void inicia_fila(struct fila *f, int tam){
-    f->capacidade = tam;
-    f->dados=(int*)malloc(f->capacidade*sizeof(int));
-    f->primeiro=0;
-    f->ultimo=-1;
+void inicia_fila( struct fila *f, int tam){
+    f-> capacidade=tam;
+    f->dados=(int*)malloc(f->capacidade * sizeof (int));
     f->nElem=0;
+    f->ultimo=-1;
+    f->primeiro=0;
 }
+
 void insere (struct fila *f, int val){
-    if(f->ultimo==f->capacidade-1)
+    if (f->ultimo==f->capacidade-1)
         f->ultimo=-1;
-    f->ultimo++;
+    f->ultimo+=1;
     f->dados[f->ultimo]=val;
-    f->nElem++;
+    f->nElem+=1;
 }
-int remover(struct fila *f){
-    int temp=f->dados[f->primeiro++];
-    if(f->primeiro==f->capacidade){
-        f->primeiro=0;
-    }
-    f->nElem--;
-    return temp;
-}
-void mostraFila(struct fila *f){
-    int cont, i;
-    for (cont = 0, i = f->primeiro;cont<f->nElem;cont++){
-        printf ("[%d]", f->dados[i++]);
-        if(i==f->capacidade)
-            i = 0;
-    }
-}
-int fVazia(struct fila *f){
-
-    return (f->nElem == 0);
-}
-int fCheia (struct fila *f){
-
+int verifica_vazia (struct fila *f) {
+    return(f->nElem==0);
+};
+int verifica_cheia (struct fila *f){
     return (f->nElem==f->capacidade);
 }
-
-int main()
-{
+int remover (struct fila *f){
+    int temp;
+    temp = f->dados[f->primeiro];
+    f->primeiro+=1;
+    f->nElem-=1;
+    return temp;
+}
+void mostrar (struct fila *f){
+    int cont, i;
+    printf("\nFILA ============>");
+    for (cont = 0, i = f->primeiro; cont<f->nElem;cont++){
+        printf("[%d]", f->dados[i++]);
+        if (i==f->capacidade)
+            i=0;
+    }
+}
+int main(){
+    setlocale(LC_ALL,"Portuguese");
+    int tam, valor, opcao;
     struct fila f;
-    int valor, tam, opcao;
-
-    printf("qual é o tamanho maximo da fila?\n");
-    scanf("%d", &tam);
-    inicia_fila(&f, tam);
+    printf("\n\nDigite o tamanho da fila: ");
+    scanf ("%d", &tam);
+    inicia_fila(&f,tam);
     while (1){
-        printf("\n1 - Inserir elemento\n2 - Remover elemento\n3 - Mostrar Fila\n0 - Sair\n\nOpcao? ");
-		scanf("%d", &opcao);
-		switch(opcao){
-        case 0:
-            exit(0);
-            break;
+        wprintf(L"\n\n1 - Inserir elemento\n2 - Remover elemento\n3 - Mostrar Fila\n0 - Sair\n\nDigite a opção desejada: ");
+        scanf ("%d", &opcao);
+        switch (opcao)
+        {
         case 1:
-            if (fCheia(&f)){
-                printf("\nERRO!! FILA CHEIA");
-                return -1;
-            }
-            else{
-                printf("\nValor para inserir? ");
+            if(verifica_cheia(&f))
+                printf("\nFILA CHEIA!!");
+            else {
+                printf("\nDigite o valor para inserir na fila: ");
                 scanf("%d", &valor);
                 insere(&f, valor);
+                mostrar(&f);
             }
             break;
         case 2:
-             if (fVazia(&f))
-                printf("\nFila vazia!");
+            if(verifica_vazia(&f))
+                printf("\nFILA VAZIA!!");
             else{
-                int temp;
-                temp=remover(&f);
-                printf("\nValor removido = %d", temp);
-            }
-        case 3:
-            if (fVazia(&f))
-                printf("\nFila vazia!");
-            else{
-                printf("\nFila => ");
-                mostraFila(&f);
+                printf("Valor removido: %d\nFILA ATUALIZADA=====> ", remover(&f));
+                mostrar(&f);
             }
             break;
+        case 3:
+            if(verifica_vazia(&f))
+                printf("\nFILA VAZIA!!");
+            else
+                mostrar(&f);
+            break;
+        case 0:
+            exit(0);
         default:
-            printf("\nOpcão inválida! Digite novamente\n");
-		}
+            wprintf(L"Opção inválida!\n");
+            break;
+        }
     }
     return 0;
 }
